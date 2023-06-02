@@ -5,8 +5,6 @@ import Avatar from '@mui/material/Avatar';
 import Button from '@mui/material/Button';
 import CssBaseline from '@mui/material/CssBaseline';
 import TextField from '@mui/material/TextField';
-import FormControlLabel from '@mui/material/FormControlLabel';
-import Checkbox from '@mui/material/Checkbox';
 import Link from '@mui/material/Link';
 import Grid from '@mui/material/Grid';
 import Box from '@mui/material/Box';
@@ -21,7 +19,9 @@ import style from '../signIn/login.css'
 const theme = createTheme();
 
 export default function SignUp() {
+  
   const [error, setError] = useState("");
+
   const handleSubmit = (event) => {
     event.preventDefault();
     const data = new FormData(event.currentTarget);
@@ -30,13 +30,18 @@ export default function SignUp() {
       lastName: data.get('lastName'),
       email: data.get('email'),
       password: data.get('password'),
-    }
-    console.log("user", userData);
+    };
 
+    const localStorageGet = localStorage.getItem("user");
+    const user = JSON.parse(localStorageGet);
+    
     if(data.get('firstName') == "" &&  data.get('lastName') == "" && data.get('email') == "" && data.get('password') == ""){
       setError("Lütfen boş alanları doldurunuz.");
-    }else{
-      setError("");
+    }else if(data.get('email') == user.email){
+      setError("Bu mail adresi kullanılmaktadır.");
+    }
+    else{
+      setError("Kayıt başarılı.");
       localStorage.setItem("user", JSON.stringify(userData));
     }
   };

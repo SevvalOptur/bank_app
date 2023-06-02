@@ -20,31 +20,31 @@ import style from './login.css'
 const theme = createTheme();
 
 export default function SignIn() {
+
   const [error, setError] = useState("");
   const router = useRouter();
+
   const handleSubmit = (event) => {
     event.preventDefault();
     const data = new FormData(event.currentTarget);
     const userData = {
       email: data.get('email'),
       password: data.get('password'),
-    }
-    console.log("user", userData);
+    };
 
     if(data.get('email') == "" || data.get('password') == ""){
       setError("Lütfen boş alanları doldurunuz.");
      }
     else{
-      setError("");
       const localStorageGet = localStorage.getItem("user");
       const user = JSON.parse(localStorageGet);
       if(user.email == data.get('email') && user.password == data.get('password')){
-        console.log("oleyyy");
-        router.push('/page')
-
+        setError("Giriş başarılı. Lütfen bekleyin.");
+        router.push('/page');
       }else{
         setError("Lütfen bilgileri kontrol ediniz.")
       }
+
     }
 
   };

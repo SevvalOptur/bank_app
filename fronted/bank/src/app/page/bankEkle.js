@@ -43,33 +43,32 @@ export default function bankEkle() {
 
   const [listBanka, setListBanka] = useState([]);
   const [bankName, setBankName] = useState("");
-  const [tur, setTur] = useState("");
+  const [type, setType] = useState(""); //kredi türü
   const [disabled, setDisabled] = useState(true);
   const [error, setError] = useState();
-
-  const [vade, setVade] = useState("");
-  const [faiz, setFaiz] = useState("");
-  const [vadeOptions, setVadeOptions] = useState([]);
+  const [time, setTime] = useState(""); //kredi vadesi
+  const [interest, setInterest] = useState(""); //kredi faizi
+  const [typeOptions, setTypeOptions] = useState([]);
   const bankID = nanoid();
 
-  const turVade = [
-    { tur: 1, value: "5", text: "5 Yıl" },
-    { tur: 1, value: "10", text: "10 Yıl" },
-    { tur: 2, value: "12", text: "12 Ay" },
-    { tur: 2, value: "24", text: "24 Ay" },
-    { tur: 2, value: "36", text: "36 Ay" },
-    { tur: 3, value: "3", text: "3 Ay" },
-    { tur: 3, value: "6", text: "6 Ay" },
-    { tur: 3, value: "12", text: "12 Ay" },
+  const timeOption = [
+    { type: 1, value: "5", text: "5 Yıl" },
+    { type: 1, value: "10", text: "10 Yıl" },
+    { type: 2, value: "12", text: "12 Ay" },
+    { type: 2, value: "24", text: "24 Ay" },
+    { type: 2, value: "36", text: "36 Ay" },
+    { type: 3, value: "3", text: "3 Ay" },
+    { type: 3, value: "6", text: "6 Ay" },
+    { type: 3, value: "12", text: "12 Ay" },
   ];
 
   const handleBankAdd = () => {
     setListBanka([
       ...listBanka,
       {
-        bank: bankName,
+        bankName: bankName,
         id: bankID,
-        item: [{ tur: tur, vade: vade, faiz: faiz }],
+        item: [{ type: type, time: time, interest: interest }],
       },
     ]);
     handleClose();
@@ -80,17 +79,17 @@ export default function bankEkle() {
     setListBanka(list);
   };
 
-  const handleFaizAdd = (id) => {
+  const handleRateAdd = (id) => {
     let listBankItem = listBanka.map((listItem) => {
       if (listItem.id == id) {
-        listItem.item.push({ tur: tur, vade: vade, faiz: faiz });
+        listItem.item.push({ type: type, time: time, interest: interest });
       }
       return listItem;
     });
     setListBanka(listBankItem);
     console.log("listBanka", listBanka);
   };
-  const handleFaizRemove = (i, id) => {
+  const handleRateRemove = (i, id) => {
     let listBankRemove = listBanka.map((listItem) => {
       if (listItem.id == id) {
         listItem.item.splice(i, 1);
@@ -100,32 +99,18 @@ export default function bankEkle() {
     setListBanka(listBankRemove);
     console.log("listBanka", listBanka);
   };
-  const handleFaizChange = (e, i, id) => {
+  const handleRateChange = (e, i, id) => {
     const { name, value } = e.target;
     let bankItem = listBanka.map((listItem) => {
       if (listItem.id == id) {
         listItem.item.map((m, index) => {
-          console.log("item m mi", m);
-
           if (index == i) {
-            if (name == "tur") {
+            if (name == "type") {
               if (value == 1 || value == 2 || value == 3) {
                 setDisabled(false);
-                let vadeOption = turVade.filter(option => option.tur == value);
-                setVadeOptions(vadeOption);
-                console.log("m", m);
-
-                vadeOption.map((o) => {
-                  if(m.tur == value && m.vade == o.value){
-                    console.log("başardık mı")
-
-                  }
-                  
-                })
-
               }
             }
-            if (name == "faiz") {
+            if (name == "interest") {
               const regex = /^\d*[0-9](|.\d{2}|,\d{2})?$/;
               if (value === "" || regex.test(value)) {
                 setError(false);
@@ -142,13 +127,14 @@ export default function bankEkle() {
     });
     setListBanka(bankItem);
   };
-  const faizSubmit = () => {
+
+  const rateSubmit = () => {
     let itemFaizOran = listBanka.map((listItem) => {
       listItem.item.map((item) => {
-        if (item.tur !== "" && item.vade !== "" && item.faiz !== "") {
+        if (item.type !== "" && item.time !== "" && item.interest !== "") {
           const regex = /^\d*[0-9](|.\d{2}|,\d{2})?$/;
-          if (item.faiz === "" || regex.test(item.faiz)) {
-            selectBox(item);
+          if (item.interest === "" || regex.test(item.interest)) {
+            // selectBox(item);
             localStorage.setItem("data", JSON.stringify(listBanka));
             console.log("Kayıt Başarılı");
           } else {
@@ -159,11 +145,11 @@ export default function bankEkle() {
       return listItem;
     });
   };
-  const selectBox = (item,) =>{
-    const a = listBanka.item;
-    // console.log("item>>", item)
+  // const selectBox = (item,) =>{
+  //   const a = listBanka.item;
+  //   console.log("itemmm>>", a)
 
-  }
+  // }
   console.log("bankalar", listBanka)
 
   //  console.log(localStorage.getItem("data"))
@@ -238,7 +224,7 @@ export default function bankEkle() {
                 aria-controls="panel1a-content"
                 id="panel1a-header"
               >
-                <Typography>{b.bank}</Typography>
+                <Typography>{b.bankName}</Typography>
               </AccordionSummary>
               <AccordionDetails>
                 <Grid xs={12}>
@@ -257,7 +243,7 @@ export default function bankEkle() {
                       sx={{ float: "right" }}
                       aria-label="delete"
                       size="large"
-                      onClick={() => handleFaizAdd(b.id)}
+                      onClick={() => handleRateAdd(b.id)}
                     >
                       <AddIcon fontSize="inherit" />
                     </IconButton>
@@ -278,9 +264,9 @@ export default function bankEkle() {
                           <Select
                             labelId="demo-select-small-label"
                             id="demo-select-small"
-                            name="tur"
-                            value={a.tur}
-                            onChange={(e) => handleFaizChange(e, i, b.id)}
+                            name="type"
+                            value={a.type}
+                            onChange={(e) => handleRateChange(e, i, b.id)}
                           >
                             <MenuItem value={1}>Konut</MenuItem>
                             <MenuItem value={2}>Tüketici</MenuItem>
@@ -303,17 +289,17 @@ export default function bankEkle() {
                           <Select
                             labelId="demo-select-small-label"
                             id="demo-select-small"
-                            name="vade"
-                            value={a.vade}
-                            onChange={(e) => handleFaizChange(e, i, b.id)}
+                            name="time"
+                            value={a.time}
+                            onChange={(e) => handleRateChange(e, i, b.id)}
                           >
-                            {vadeOptions
-                              .map((turVade) => (
+                            {timeOption.filter((time) => time.type == a.type)
+                              .map((timeOption) => (
                                 <MenuItem
-                                  key={turVade.value}
-                                  value={turVade.value}
+                                  key={timeOption.value}
+                                  value={timeOption.value}
                                 >
-                                  {turVade.text}
+                                  {timeOption.text}
                                 </MenuItem>
                               ))}
                           </Select>
@@ -324,14 +310,14 @@ export default function bankEkle() {
                       <Box sx={{ m: 1, minWidth: 120 }}>
                         <TextField
                           type="number"
-                          value={a.faiz}
-                          name="faiz"
+                          value={a.interest}
+                          name="interest"
                           variant="outlined"
                           label="Aylık Faiz Oranı"
                           size="small"
                           error={error}
                           helperText="virgülden sonra maks 2 basamak"
-                          onChange={(e) => handleFaizChange(e, i, b.id)}
+                          onChange={(e) => handleRateChange(e, i, b.id)}
                         />
                       </Box>
                     </Grid>
@@ -340,14 +326,14 @@ export default function bankEkle() {
                         <Button
                           variant="contained"
                           sx={{ marginRight: 1 }}
-                          onClick={faizSubmit}
+                          onClick={rateSubmit}
                         >
                           Kaydet
                         </Button>
                         <Button
                           variant="contained"
                           color="error"
-                          onClick={() => handleFaizRemove(i, b.id)}
+                          onClick={() => handleRateRemove(i, b.id)}
                         >
                           Sil
                         </Button>

@@ -21,33 +21,33 @@ const center = {
   alignItems: "center",
 };
 export default function LabTabs() {
-  const [vade, setVade] = useState("");
-  const [miktar, setMiktar] = useState("");
-  const [mevduat, setMevduat] = useState([]);
+  const [time, setTime] = useState("");
+  const [money, setMoney] = useState("");
+  const [deposit, setDeposit] = useState([]);
 
-  const mevduatBul = () => {
-    if (vade !== "" && miktar !== "") {
+  const depositSearch = () => {
+    if (time !== "" && money !== "") {
       const localStorageGet = localStorage.getItem("data");
       const bank = JSON.parse(localStorageGet);
       bank.map((listItem) => {
-        const bankName = listItem.bank;
+        const bankName = listItem.bankName;
         let result = listItem.item
-          .filter((item) => item.tur == 3 && item.vade == vade)
+          .filter((item) => item.type == 3 && item.time == time)
           .map((x) => {
-            const faiz = ((miktar / 100) * (x.faiz / 12) * vade).toFixed(2);
-            let a = parseFloat(miktar);
-            let b = parseFloat(faiz);
+            const interest = ((money / 100) * (x.interest / 12) * time).toFixed(2);
+            let a = parseFloat(money);
+            let b = parseFloat(interest);
 
             x.bankName = bankName;
-            x.vade = vade;
-            x.anapara = miktar;
-            x.faiz = x.faiz;
-            x.faizOran = faiz;
-            x.mevduat = a + b;
+            x.time = time;
+            x.money = money;
+            x.interest = x.interest;
+            x.interestAmount = interest;
+            x.deposit = a + b;
             return x;
           });
           console.log("result>>", result)
-        setMevduat(result);
+        setDeposit(result);
       });
     } else {
       console.log("olmadı");
@@ -65,10 +65,10 @@ export default function LabTabs() {
               <Select
                 labelId="demo-select-small-label"
                 id="demo-select-small"
-                name="vade"
-                value={vade}
+                name="time"
+                value={time}
                 onChange={(e) => {
-                  setVade(e.target.value);
+                  setTime(e.target.value);
                 }}
               >
                 <MenuItem value={3}>3 Ay</MenuItem>
@@ -82,34 +82,34 @@ export default function LabTabs() {
           <Box sx={{ m: 1, minWidth: 120 }}>
             <TextField
               type="number"
-              value={miktar}
-              name="miktar"
+              value={money}
+              name="money"
               variant="outlined"
               label="Yatırılacak Para"
               id="outlined-size-small"
               size="small"
               onChange={(e) => {
-                setMiktar(e.target.value);
+                setMoney(e.target.value);
               }}
             />
           </Box>
         </Grid>
         <Grid item xs={4}>
           <Box sx={{ m: 1 }}>
-            <Button variant="contained" onClick={mevduatBul}>
+            <Button variant="contained" onClick={depositSearch}>
               Bul
             </Button>
           </Box>
         </Grid>
       </Grid>
       <Grid container marginTop={3}>
-      {mevduat.length == 0 && (
+      {deposit.length == 0 && (
         <Typography sx={center} marginTop="1rem">
           Herhangi bir mevduat faizi bulunmamaktadır.
         </Typography>
       )}
         <Grid item xs={12}>
-          {mevduat.map((b, i) => (
+          {deposit.map((b, i) => (
             <Accordion key={i}>
               <AccordionSummary
                 expandIcon={<ExpandMoreIcon />}
@@ -119,17 +119,17 @@ export default function LabTabs() {
                 <Typography sx={{ width: "50%", flexShrink: 0 }}>
                   {b.bankName}
                 </Typography>
-                <Typography>Aylık Faiz Oranı %{b.faiz}</Typography>
+                <Typography>Aylık Faiz Oranı %{b.interest}</Typography>
               </AccordionSummary>
               <AccordionDetails>
                 <Typography sx={center}>
-                  Mevduat Tutar: {b.anapara} TL
+                  Mevduat Tutar: {b.money} TL
                 </Typography>
                 <Typography sx={center}>
-                  {b.vade} vade sonunda alınacak faiz :{b.faizOran} TL
+                  {b.time} ay vade sonunda alınacak faiz :{b.interestAmount} TL
                 </Typography>
                 <Typography sx={center}>
-                  {b.vade} vade sonunda toplam mevduat: {b.mevduat} TL
+                  {b.time} ay vade sonunda toplam mevduat: {b.deposit} TL
                 </Typography>
               </AccordionDetails>
             </Accordion>

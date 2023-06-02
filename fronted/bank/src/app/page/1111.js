@@ -1,202 +1,284 @@
 "use client";
-import * as React from 'react';
-import Box from '@mui/material/Box';
-import Tab from '@mui/material/Tab';
-import TabContext from '@mui/lab/TabContext';
-import TabList from '@mui/lab/TabList';
-import TabPanel from '@mui/lab/TabPanel';
-import Button from '@mui/material/Button';
-import Typography from '@mui/material/Typography';
-import Modal from '@mui/material/Modal';
-import TextField from '@mui/material/TextField';
-import Grid from '@mui/material/Grid';
-import Accordion from '@mui/material/Accordion';
-import AccordionSummary from '@mui/material/AccordionSummary';
-import AccordionDetails from '@mui/material/AccordionDetails';
-import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
-import InputLabel from '@mui/material/InputLabel';
-import MenuItem from '@mui/material/MenuItem';
-import FormControl from '@mui/material/FormControl';
-import Select from '@mui/material/Select';
-import AddIcon from '@mui/icons-material/Add';
-import IconButton from '@mui/material/IconButton';  
-import UygunKredi from './uygunKredi.js'
-import MevduatFaizi from './mevduatFaiz.js'
+import * as React from "react";
+import { useState } from "react";
+import Box from "@mui/material/Box";
+import Button from "@mui/material/Button";
+import Typography from "@mui/material/Typography";
+import Modal from "@mui/material/Modal";
+import TextField from "@mui/material/TextField";
+import Grid from "@mui/material/Grid";
+import Accordion from "@mui/material/Accordion";
+import AccordionSummary from "@mui/material/AccordionSummary";
+import AccordionDetails from "@mui/material/AccordionDetails";
+import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
+import InputLabel from "@mui/material/InputLabel";
+import MenuItem from "@mui/material/MenuItem";
+import FormControl from "@mui/material/FormControl";
+import Select from "@mui/material/Select";
+import AddIcon from "@mui/icons-material/Add";
+import IconButton from "@mui/material/IconButton";
+import { nanoid } from "nanoid";
 
-const style = {
-    width: '50%',
-    typography: 'body1', 
-    margin: 'auto', 
-    marginTop: '5%', 
-    border: '1px solid #000',
-    borderRadius: '5px',
-    padding: '20px'
-
-};
 const modalStyle = {
-  position: 'absolute',
-  top: '50%',
-  left: '50%',
-  transform: 'translate(-50%, -50%)',
+  position: "absolute",
+  top: "50%",
+  left: "50%",
+  transform: "translate(-50%, -50%)",
   width: 400,
-  bgcolor: 'background.paper',
-  border: '2px solid #000',
+  bgcolor: "background.paper",
+  border: "2px solid #000",
   boxShadow: 24,
   p: 4,
 };
 
-const center = { 
-  display:"flex",
-  justifyContent:"center",
-  alignItems:"center"
-}
-export default function LabTabs() {
-
+const center = {
+  display: "flex",
+  justifyContent: "center",
+  alignItems: "center",
+};
+export default function bankEkle() {
   const [open, setOpen] = React.useState(false);
   const handleOpen = () => setOpen(true);
   const handleClose = () => setOpen(false);
 
+  const [listBanka, setListBanka] = useState([]);
+  const [bankName, setBankName] = useState("");
+  const [type, setType] = useState(""); //kredi türü
+  const [disabled, setDisabled] = useState(true);
+  const [error, setError] = useState();
+  const [time, setTime] = useState(""); //kredi vadesi
+  const [interest, setInterest] = useState(""); //kredi faizi
+  const [typeOptions, setTypeOptions] = useState([]);
+  const bankID = nanoid();
 
-  const [tur, setTur] = React.useState('');
-  const [disabled, setDisabled] = React.useState(true);
-  const [vade, setVade] = React.useState('');
-  const [num, setNum] = React.useState();
-  const [list, setList] = React.useState([{tur:"", vade:"", faiz:""}])
-  const turVade = [
-    {tur:1, value:'5', text: '5 Yıl'},
-    {tur:1, value:'10', text: '10 Yıl'},
-    {tur:2, value:'12', text: '12 Ay'},
-    {tur:2, value:'24', text: '24 Ay'},
-    {tur:2, value:'36', text: '36 Ay'},
-    {tur:3, value:'3', text: '3 Ay'},
-    {tur:3, value:'6', text: '6 Ay'},
-    {tur:3, value:'12', text: '12 Ay'},
+  const timeOption = [
+    { type: 1, value: "5", text: "5 Yıl" },
+    { type: 1, value: "10", text: "10 Yıl" },
+    { type: 2, value: "12", text: "12 Ay" },
+    { type: 2, value: "24", text: "24 Ay" },
+    { type: 2, value: "36", text: "36 Ay" },
+    { type: 3, value: "3", text: "3 Ay" },
+    { type: 3, value: "6", text: "6 Ay" },
+    { type: 3, value: "12", text: "12 Ay" },
   ];
 
-  const newBank ={
-    tur: tur,
-    vade:vade,
-    faiz: num
-  }
-  const handleListAdd = () => {
-    setList([...list, {tur:"", vade:"", faiz:""}])
-  }
-  const handleListRemove = (i) => {
-    const listRow = [...list];
-    listRow.splice(i, 1);
-    setList(listRow);
-  }
-  const handleChange3 = (event) => {
-    setVade(event.target.value);
-    console.log("vade: ",event.target.value);
+  const handleBankAdd = () => {
+    setListBanka([
+      ...listBanka,
+      {
+        bankName: bankName,
+        id: bankID,
+        item: [{ type: type, time: time, interest: interest }],
+      },
+    ]);
+    handleClose();
   };
-      // const listFaiz = [...faizList]
-    // console.log("aaa",listFaiz)
-    // listFaiz.splice(index,1);
-    // setFaizList(listFaiz)
-    // console.log(setFaizList(listFaiz))
-
-
-  const handleChange4 = (event) => {
-    const regex = /^\d*[0-9](|.\d{2}|,\d{2})?$/;
-    if (event.target.value === "" || regex.test(event.target.value)) {
-      setNum(event.target.value);
-    }
-    //hepsini aynı change bagla
+  const handleBankRemove = (index) => {
+    const list = [...listBanka];
+    list.splice(index, 1);
+    setListBanka(list);
   };
-  const handleListChange = (e,i) => {
-    const {name, value} = e.target
-    const listRow = [...list];
-    listRow[i][name] = value;
-    setList(listRow)
-    console.log("name",listRow)
 
-    if(name == 'tur'){
-      if(value == 1 || value==2 || value==3){
-        setDisabled(false);
-        setTur(value)
+  const handleRateAdd = (id) => {
+    let listBankItem = listBanka.map((listItem) => {
+      if (listItem.id == id) {
+        listItem.item.push({ type: type, time: time, interest: interest });
       }
-      else{
-        setVade("");
+      return listItem;
+    });
+    setListBanka(listBankItem);
+    console.log("listBanka", listBanka);
+  };
+  const handleRateRemove = (i, id) => {
+    let listBankRemove = listBanka.map((listItem) => {
+      if (listItem.id == id) {
+        listItem.item.splice(i, 1);
       }
-    }
-  }
-  console.log("ne çıkacak", list)
-  const deneme = () => {
-    console.log("submit", newBank)
-  }
+      return listItem;
+    });
+    setListBanka(listBankRemove);
+    console.log("listBanka", listBanka);
+  };
+  const handleRateChange = (e, i, id) => {
+    const { name, value } = e.target;
+    let bankItem = listBanka.map((listItem) => {
+      if (listItem.id == id) {
+        listItem.item.map((m, index) => {
+          console.log("item m mi", m);
+          if (index == i) {
+            if (name == "type") {
+              if (value == 1 || value == 2 || value == 3) {
+                setDisabled(false);
+                // let vadeOption = timeOption.filter(option => option.type == value);
+                // setTypeOptions(vadeOption);
+                // console.log("m", m);
+
+                // vadeOption.map((o) => {
+                //   if(m.type == value && m.time == o.value){
+                //     console.log("başardık mı")
+
+                //   }
+                  
+                // })
+
+              }
+            }
+            if (name == "interest") {
+              const regex = /^\d*[0-9](|.\d{2}|,\d{2})?$/;
+              if (value === "" || regex.test(value)) {
+                setError(false);
+              } else {
+                setError(true);
+              }
+            }
+            m[name] = value;
+            return m;
+          }
+        });
+      }
+      return listItem;
+    });
+    setListBanka(bankItem);
+  };
+  const rateSubmit = () => {
+    let itemFaizOran = listBanka.map((listItem) => {
+      listItem.item.map((item) => {
+        if (item.type !== "" && item.time !== "" && item.interest !== "") {
+          const regex = /^\d*[0-9](|.\d{2}|,\d{2})?$/;
+          if (item.interest === "" || regex.test(item.interest)) {
+            // selectBox(item);
+            localStorage.setItem("data", JSON.stringify(listBanka));
+            console.log("Kayıt Başarılı");
+          } else {
+            console.log("Kayıt Başarısız");
+          }
+        }
+      });
+      return listItem;
+    });
+  };
+  // const selectBox = (item,) =>{
+  //   const a = listBanka.item;
+  //   console.log("itemmm>>", a)
+
+  // }
+  console.log("bankalar", listBanka)
+
+  //  console.log(localStorage.getItem("data"))
   return (
     <>
-          <Box sx={center}>
-            <Button variant="contained"  onClick={handleOpen}>Banka Ekle</Button>
-          </Box>
-          <Modal
-            open={open}
-            onClose={handleClose}
-            aria-labelledby="modal-modal-title"
-            aria-describedby="modal-modal-description"
+      <Box sx={center}>
+        <Button variant="contained" onClick={handleOpen}>
+          Banka Ekle
+        </Button>
+      </Box>
+      <Modal
+        open={open}
+        onClose={handleClose}
+        aria-labelledby="modal-modal-title"
+        aria-describedby="modal-modal-description"
+      >
+        <Box sx={modalStyle}>
+          <Typography
+            id="modal-modal-title"
+            align="center"
+            variant="h6"
+            component="h2"
           >
-            <Box sx={modalStyle}>
-              <Typography id="modal-modal-title" align="center" variant="h6" component="h2">
-                Banka Adı
-              </Typography>
-              <Typography id="modal-modal-description" sx={{ mt: 2 }}>
-                <Grid container spacing={2}>
-                  <Grid item xs={12}>
-                    <TextField
-                        InputProps={{
-                            sx: {
-                                color: 'black !important',
-                                '&:focus-within fieldset, &:focus-visible fieldset': {
-                                border: '1px solid #0099ff!important',
-                                },
-                            },
-                        }}
-                        required
-                        fullWidth
-                        name="text"
-                        type="text"
-                        id="text"
-                    />
-                  </Grid>
-                </Grid>
-                <Box sx={center} marginTop="1rem">
-                  <Button variant="contained" color='success'>Ekle</Button>
-                </Box>
-              </Typography>
+            Banka Adı
+          </Typography>
+          <Typography id="modal-modal-description" sx={{ mt: 2 }}>
+            <Grid container spacing={2}>
+              <Grid item xs={12}>
+                <TextField
+                  InputProps={{
+                    sx: {
+                      color: "black !important",
+                      "&:focus-within fieldset, &:focus-visible fieldset": {
+                        border: "1px solid #0099ff!important",
+                      },
+                    },
+                  }}
+                  required
+                  fullWidth
+                  name="bankName"
+                  type="text"
+                  id="bankName"
+                  onChange={(e) => {
+                    setBankName(e.target.value);
+                  }}
+                />
+              </Grid>
+            </Grid>
+            <Box sx={center} marginTop="1rem">
+              <Button
+                variant="contained"
+                color="success"
+                onClick={handleBankAdd}
+              >
+                Ekle
+              </Button>
             </Box>
-          </Modal>
-          <Typography sx={center} marginTop="1rem">Herhangi bir banka bulunmamaktadır.</Typography>
-          <Box sx={{marginTop:'2rem'}}>
-            <Accordion>
-              <AccordionSummary expandIcon={<ExpandMoreIcon />} aria-controls="panel1a-content" id="panel1a-header">
-                <Typography>Banka Adı</Typography>
+          </Typography>
+        </Box>
+      </Modal>
+      {listBanka.length == 0 && (
+        <Typography sx={center} marginTop="1rem">
+          Herhangi bir banka bulunmamaktadır.
+        </Typography>
+      )}
+      <Grid container marginTop={3}>
+        <Grid item xs={12}>
+          {listBanka.map((b, i) => (
+            <Accordion key={i}>
+              <AccordionSummary
+                expandIcon={<ExpandMoreIcon />}
+                aria-controls="panel1a-content"
+                id="panel1a-header"
+              >
+                <Typography>{b.bankName}</Typography>
               </AccordionSummary>
               <AccordionDetails>
                 <Grid xs={12}>
-                  <Button sx={{float:'right'}} variant="contained" color='error'>Sil</Button>
+                  <Button
+                    sx={{ float: "right" }}
+                    variant="contained"
+                    color="error"
+                    onClick={() => handleBankRemove(i)}
+                  >
+                    Sil
+                  </Button>
                 </Grid>
-                
                 <Grid container xs={12}>
                   <Grid item xs={12}>
-                    <IconButton sx={{float:'right'}} aria-label="delete" size="large" onClick={handleListAdd}>
+                    <IconButton
+                      sx={{ float: "right" }}
+                      aria-label="delete"
+                      size="large"
+                      onClick={() => handleRateAdd(b.id)}
+                    >
                       <AddIcon fontSize="inherit" />
                     </IconButton>
                   </Grid>
                 </Grid>
-                {list.map((a,i) => (
+                {b.item.map((a, i) => (
                   <Grid key={i} container spacing={2}>
                     <Grid item xs={3}>
                       <Box sx={{ minWidth: 120 }}>
-                        <FormControl required sx={{ m: 1, minWidth: 120 }} size="small">
-                          <InputLabel id="demo-select-small-label">Tür</InputLabel>
+                        <FormControl
+                          required
+                          sx={{ m: 1, minWidth: 120 }}
+                          size="small"
+                        >
+                          <InputLabel id="demo-select-small-label">
+                            Tür
+                          </InputLabel>
                           <Select
                             labelId="demo-select-small-label"
                             id="demo-select-small"
-                            name='tur'
-                            value={a.tur}
-                            label="Age"
-                            onChange={(e) => handleListChange(e,i)}
+                            name="type"
+                            value={a.type}
+                            onChange={(e) => handleRateChange(e, i, b.id)}
                           >
                             <MenuItem value={1}>Konut</MenuItem>
                             <MenuItem value={2}>Tüketici</MenuItem>
@@ -207,42 +289,75 @@ export default function LabTabs() {
                     </Grid>
                     <Grid item xs={3}>
                       <Box sx={{ minWidth: 120 }}>
-                        <FormControl required disabled={disabled} sx={{ m: 1, minWidth: 120 }} size="small">
-                          <InputLabel id="demo-select-small-label">Vade</InputLabel>
+                        <FormControl
+                          required
+                          disabled={disabled}
+                          sx={{ m: 1, minWidth: 120 }}
+                          size="small"
+                        >
+                          <InputLabel id="demo-select-small-label">
+                            Vade
+                          </InputLabel>
                           <Select
                             labelId="demo-select-small-label"
                             id="demo-select-small"
-                            name='vade'
-                            value={a.vade}
-                            label="Age"
-                            onChange={(e) => {handleListChange(e,i);handleChange3} }
+                            name="time"
+                            value={a.time}
+                            onChange={(e) => handleRateChange(e, i, b.id)}
                           >
-                            {turVade.filter(vade=>vade.tur == tur).map(turVade=>(
-                              <MenuItem key={turVade.value} value={turVade.value}>{turVade.text}</MenuItem>
-                            ))}
+                            {timeOption.filter((time) => time.type == a.type)
+                              .map((timeOption) => (
+                                <MenuItem
+                                  key={timeOption.value}
+                                  value={timeOption.value}
+                                >
+                                  {timeOption.text}
+                                </MenuItem>
+                              ))}
                           </Select>
                         </FormControl>
                       </Box>
                     </Grid>
                     <Grid item xs={3}>
                       <Box sx={{ m: 1, minWidth: 120 }}>
-                        <TextField type="number" value={a.faiz} name='faiz' variant="outlined" label="Aylık Faiz Oranı" id="outlined-size-small" size="small" onChange={(e) => {handleChange4(e); handleListChange(e,i)}}/>
+                        <TextField
+                          type="number"
+                          value={a.interest}
+                          name="interest"
+                          variant="outlined"
+                          label="Aylık Faiz Oranı"
+                          size="small"
+                          error={error}
+                          helperText="virgülden sonra maks 2 basamak"
+                          onChange={(e) => handleRateChange(e, i, b.id)}
+                        />
                       </Box>
                     </Grid>
                     <Grid item xs={2}>
                       <Box sx={{ m: 1 }}>
-                        <Button variant="contained" sx={{ marginRight: 1 }} onClick={deneme}>Kaydet</Button>
-                        <Button variant="contained" color='error' onClick={() => handleListRemove(i)}>Sil</Button>
+                        <Button
+                          variant="contained"
+                          sx={{ marginRight: 1 }}
+                          onClick={rateSubmit}
+                        >
+                          Kaydet
+                        </Button>
+                        <Button
+                          variant="contained"
+                          color="error"
+                          onClick={() => handleRateRemove(i, b.id)}
+                        >
+                          Sil
+                        </Button>
                       </Box>
                     </Grid>
-                  </Grid>                  
+                  </Grid>
                 ))}
-
-
               </AccordionDetails>
             </Accordion>
-
-          </Box>
+          ))}
+        </Grid>
+      </Grid>
     </>
   );
 }
