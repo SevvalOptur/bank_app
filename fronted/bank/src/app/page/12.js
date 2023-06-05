@@ -36,32 +36,19 @@ const center = {
   justifyContent: "center",
   alignItems: "center",
 };
-const timeOption = [
-  { type: 1, valueT:"1", textT: "Konut", value: "5", text: "5 Yıl" },
-  { type: 1, valueT:"1", textT: "Konut", value: "10", text: "10 Yıl" },
-  { type: 2, valueT:"2", textT: "Tüketici", value: "12", text: "12 Ay" },
-  { type: 2, valueT:"2", textT: "Tüketici", value: "24", text: "24 Ay" },
-  { type: 2, valueT:"2", textT: "Tüketici", value: "36", text: "36 Ay" },
-  { type: 3, valueT:"3", textT: "Mevduat", value: "3", text: "3 Ay" },
-  { type: 3, valueT:"3", textT: "Mevduat", value: "6", text: "6 Ay" },
-  { type: 3, valueT:"3", textT: "Mevduat", value: "12", text: "12 Ay" },
-];
 export default function bankEkle() {
   const [open, setOpen] = React.useState(false);
   const handleOpen = () => setOpen(true);
   const handleClose = () => setOpen(false);
 
   const [listBanka, setListBanka] = useState([]);
-  const [deneme, setDeneme] = useState([]);
-
   const [bankName, setBankName] = useState("");
   const [type, setType] = useState(""); //kredi türü
   const [disabled, setDisabled] = useState(true);
   const [error, setError] = useState();
   const [time, setTime] = useState(""); //kredi vadesi
   const [interest, setInterest] = useState(""); //kredi faizi
-  const [typeOptions, setTypeOptions] = useState(timeOption);
-  
+  const [typeOptions, setTypeOptions] = useState([]);
   const bankID = nanoid();
   // const [timeOption, setTimeOption] = useState([]);
 
@@ -81,20 +68,20 @@ export default function bankEkle() {
   //   { type: 3, value: "6", text: "6 Ay" },
   //   { type: 3, value: "12", text: "12 Ay" },
   // ];
-  // const timeOption = [
-  //   { type: 1, valueT:"1", textT: "Konut", value: "5", text: "5 Yıl" },
-  //   { type: 1, valueT:"1", textT: "Konut", value: "10", text: "10 Yıl" },
-  //   { type: 2, valueT:"2", textT: "Tüketici", value: "12", text: "12 Ay" },
-  //   { type: 2, valueT:"2", textT: "Tüketici", value: "24", text: "24 Ay" },
-  //   { type: 2, valueT:"2", textT: "Tüketici", value: "36", text: "36 Ay" },
-  //   { type: 3, valueT:"3", textT: "Mevduat", value: "3", text: "3 Ay" },
-  //   { type: 3, valueT:"3", textT: "Mevduat", value: "6", text: "6 Ay" },
-  //   { type: 3, valueT:"3", textT: "Mevduat", value: "12", text: "12 Ay" },
-  // ];
+  const timeOption = [
+    { type: 1, valueT:"1", textT: "Konut", value: "5", text: "5 Yıl" },
+    { type: 1, valueT:"1", textT: "Konut", value: "10", text: "10 Yıl" },
+    { type: 2, valueT:"2", textT: "Tüketici", value: "12", text: "12 Ay" },
+    { type: 2, valueT:"2", textT: "Tüketici", value: "24", text: "24 Ay" },
+    { type: 2, valueT:"2", textT: "Tüketici", value: "36", text: "36 Ay" },
+    { type: 3, valueT:"3", textT: "Mevduat", value: "3", text: "3 Ay" },
+    { type: 3, valueT:"3", textT: "Mevduat", value: "6", text: "6 Ay" },
+    { type: 3, valueT:"3", textT: "Mevduat", value: "12", text: "12 Ay" },
+  ];
   const uniqueOptions = [];
   const uniqueKeys = [];
 
-  typeOptions.forEach((option) => {
+  timeOption.forEach((option) => {
     if (!uniqueKeys.includes(option.valueT)) {
       uniqueKeys.push(option.valueT);
       uniqueOptions.push(option);
@@ -143,16 +130,17 @@ export default function bankEkle() {
   const handleRateChange = (e, i, id) => {
     const { name, value } = e.target;
     let bankItem = listBanka.map((listItem) => {
+      console.log("deneme", listItem.item);
 
-
-        if (listItem.id == id) {
-          const filteredArray1 = timeOption.filter((item1) => {
-            return !listItem.item.some((item2) => item1.type == item2.type && item1.value == item2.time);
-          });
-          console.log("deneme", filteredArray1);
-        setDeneme(filteredArray1);
-          const removedData = timeOption.filter((item1) => !filteredArray1.includes(item1));
-          console.log("Çıkarılan Veri:", removedData);
+      // const filteredArray1 = timeOption.filter((item1) => {
+      //   return !listItem.item.some((item2) => item1.type == item2.type && item1.value == item2.time);
+      // });
+    
+      // const removedData = timeOption.filter((item1) => !filteredArray1.includes(item1));
+      // console.log("Çıkarılan Veri:", removedData);
+      
+    
+      if (listItem.id == id) {
         listItem.item.map((m, index) => {
           if (index == i) {
             if (name == "type") {
@@ -168,12 +156,7 @@ export default function bankEkle() {
                 setError(true);
               }
             }
-
             m[name] = value;
-            let emptyArray = [];
-            emptyArray = timeOption;
-            const deneme =  emptyArray.filter(item => !removedData.includes(item));
-            // setTypeOptions(deneme);
             return m;
           }
         });
@@ -350,7 +333,7 @@ export default function bankEkle() {
                             value={a.time}
                             onChange={(e) => handleRateChange(e, i, b.id)}
                           >
-                            { typeOptions.filter((time) => time.type == a.type )
+                            {timeOption.filter((time) => time.type == a.type)
                               .map((timeOption) => (
                                 <MenuItem
                                   key={timeOption.value}
@@ -358,8 +341,7 @@ export default function bankEkle() {
                                 >
                                   {timeOption.text}
                                 </MenuItem>
-                              ))
-                              }
+                              ))}
                           </Select>
                         </FormControl>
                       </Box>
